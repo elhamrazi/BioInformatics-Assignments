@@ -49,8 +49,7 @@ def global_align(x, y, s_match, s_mismatch, s_gap):
                     candidate_gap += 1
                 else:
                     break
-            # print("I am here")
-            # print(candidate_gap, j)
+            
             added_gaps.append(candidate_gap)
             align_X = x[i - 1] + align_X
             align_Y = "-" + align_Y
@@ -62,9 +61,7 @@ def global_align(x, y, s_match, s_mismatch, s_gap):
             align_Y = y[j - 1] + align_Y
             j = j - 1
     added_gaps.reverse()
-    # for i in range(1, len(added_gaps)):
-    #     if added_gaps[i] == added_gaps[i-1]:
-    #         added_gaps[i] += 1 
+   
     return align_X, align_Y, A[len(y)][len(x)], added_gaps
 
 
@@ -90,21 +87,13 @@ def c_star(init_seqs, n):
     # print(seqs)
     sp, sum, total = create_score_matrix(seqs, n)
     center_index = max(sum, key=sum.get)
-    # print(sp)
-    # print(center_index)
     progressive_align_order = {k: v for k, v in sorted(sp[center_index].items(), key=lambda item: item[1], reverse=True)}
-    # print(progressive_align_order)
+  
     star_align = copy.deepcopy(seqs)
     for i in progressive_align_order.keys():
         temp_center = star_align[center_index]
         align_o, align_c, _, gaps = global_align(star_align[i], temp_center, 3, -1, -2)
-        # for g in range(len(gaps)):
-        #     if g+1 < len(gaps):
-        #         if align_c[g+1] == '-':
-        #             gaps[g] += 1
-        # print(gaps)
-        # print(align_c)
-        # print(align_o)
+       
         star_align[center_index] = align_c
         star_align[i] = align_o
         # gaps_ = find_gaps(align_c, temp_center)
@@ -115,15 +104,6 @@ def c_star(init_seqs, n):
         print(align_c, align_o)
         # print(gaps_)
         star_align = insert_gaps(progressive_align_order, star_align, gaps, i)
-    # print(get_score(star_align))
-    # for s in star_align:
-    #     print(s)
-
-    # print(get_score(star_align))
-    # # print(find_all_matches_index(star_align, n))
-    # for s in star_align:
-    #     print(s)
-    # print("kjkjkjk", get_score(star_align))
     return get_score(star_align), star_align
     
 
@@ -221,16 +201,10 @@ def improve_cstar(seqs, n):
         blocks = find_blocks(cstar, indexes, n)
         done = 0
         for key in blocks.keys():
-            # print("before", blocks[key])
             score = get_score(blocks[key])
-            # print("old score: ", score)
             blocks[key] = delete_gaps(blocks[key], n)
-            # print("before", blocks[key])
+            
             new_score, new_cstar = c_star(blocks[key], n)
-            # for cs in new_cstar:
-            #     print(cs)
-            # print(new_cstar)
-            # print("new score", new_score)
             if new_score > score:
                 for i in range(n):
                     # print("before ", cstar[i])
